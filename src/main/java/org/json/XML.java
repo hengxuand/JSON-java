@@ -549,10 +549,11 @@ public class XML {
         return val.indexOf('.') > -1 || val.indexOf('e') > -1 || val.indexOf('E') > -1 || "-0".equals(val);
     }
 
+    // TODO: implement two new methods
     // overload methods here
     public static JSONObject toJSONObject(Reader reader, JSONPointer path) {
     	JSONObject jo = new JSONObject();
-    	jo.query(path);
+    	jo = reader.query(path);
         return jo;
     }
 
