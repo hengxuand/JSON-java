@@ -557,32 +557,33 @@ public class XML {
 		JSONObject jo = new JSONObject();
 		BufferedReader bufferreader = new BufferedReader(reader);
 		String[] pathArr = path.toURIFragment().split("/");
-		boolean findStart = false;
+		boolean found = false;
+		int i = 1;
 
-		for (int i = 1; i < pathArr.length; i++) {
-			String startTag = pathArr[i];
-			String line = "";
-			try {
-				while ((line = bufferreader.readLine()) != null) {
+		String startTag = pathArr[i];
+		String line = "";
+		try {
+			while ((line = bufferreader.readLine()) != null && !found && i < pathArr.length) {
 
-					if (line.contains("<" + startTag + ">")) {
-						findStart = true;
-						String jsonStart = line.substring(line.indexOf("<" + startTag + ">"));
-						String endTag = "</" + pathArr[i] + ">";
-						System.out.println(jsonStart + endTag);
-						for (int j = i + 1; j < pathArr.length; j++) {
+				if (line.contains("<" + startTag + ">")) {
+					i++;
+					startTag = pathArr[i];
+					String jsonStart = line.substring(line.indexOf("<" + startTag + ">"));
+					String endTag = "</" + pathArr[i] + ">";
+					System.out.println(jsonStart + endTag);
+					for (int j = i + 1; j < pathArr.length; j++) {
 
-						}
 					}
-
-					line = "";
 				}
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				line = "";
 			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 		return jo;
 	}
 
