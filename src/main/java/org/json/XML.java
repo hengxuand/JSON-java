@@ -574,6 +574,7 @@ public class XML {
 					break;
 				}
 				else{
+					lines = "";
 					continue;
 				}
 
@@ -594,12 +595,8 @@ public class XML {
 
 	}
 
-	static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) {
-		nina
-
-				Shaun
-
-		return null;
+	static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) throws IOException {
+	
 	}
 
 	/**
