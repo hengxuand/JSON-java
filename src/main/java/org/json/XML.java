@@ -595,8 +595,30 @@ public class XML {
 
 	}
 
-	static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) throws IOException {
-	
+
+	public static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) throws IOException {
+		JSONPointer jsonpointer = new JSONPointer(path.toURIFragment());
+		JSONObject jo = XML.toJSONObject(reader);
+		String[] keyPath = jsonpointer.toURIFragment().split("/");
+
+		String parentPath = "";
+		for(int i = 0; i < keyPath.length - 1; i ++) {
+			parentPath += keyPath[i];
+			if(i != keyPath.length - 2) {
+				parentPath += '/';
+			}
+		}
+		JSONPointer parentPointer = new JSONPointer(parentPath);
+		String repKey = keyPath[keyPath.length - 1];
+
+		try {
+			((JSONObject) jo.query(parentPointer)).put(repKey, replacement);
+
+		}catch (Exception e) {
+			System.out.println("In Array!");
+		}
+		return jo;
+
 	}
 
 	/**

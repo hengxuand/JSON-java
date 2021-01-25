@@ -45,7 +45,6 @@ options in the <component translate="no">XML</component> filter.
 
   <signature> Paul Smith</signature>
 
-
   <address translate="yes">Smith &amp; Company Ltd.</address>
 
 
@@ -60,6 +59,3 @@ options in the <component translate="no">XML</component> filter.
 </letter>
 <letter1>
 </letter1>
-<letter>
-    <signature>Hengxuan Dong</signature>
-</letter>
