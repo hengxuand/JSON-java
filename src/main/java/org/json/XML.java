@@ -595,6 +595,7 @@ public class XML {
 	}
 
 	static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) {
+		nina
 		return null;
 	}
 
