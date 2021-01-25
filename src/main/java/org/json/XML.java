@@ -549,41 +549,23 @@ public class XML {
 	private static boolean isDecimalNotation(final String val) {
 		return val.indexOf('.') > -1 || val.indexOf('e') > -1 || val.indexOf('E') > -1 || "-0".equals(val);
 	}
+	
+	
 
 	// TODO: implement two new methods
 	// overload methods here
-	public static JSONObject toJSONObject(Reader reader, JSONPointer path) {
-
+	public static JSONObject toJSONObject(Reader reader, JSONPointer path) throws IOException {
 		JSONObject jo = new JSONObject();
-		BufferedReader bufferreader = new BufferedReader(reader);
-		String[] pathArr = path.toURIFragment().split("/");
-		boolean found = false;
-		int i = 1;
-
-		String startTag = pathArr[i];
-		String line = "";
-		try {
-			while ((line = bufferreader.readLine()) != null && !found && i < pathArr.length) {
-
-				if (line.contains("<" + startTag + ">")) {
-					i++;
-					startTag = pathArr[i];
-					String jsonStart = line.substring(line.indexOf("<" + startTag + ">"));
-					String endTag = "</" + pathArr[i] + ">";
-					System.out.println(jsonStart + endTag);
-					for (int j = i + 1; j < pathArr.length; j++) {
-
-					}
-				}
-
-				line = "";
+		XMLTokener x = new XMLTokener(reader);
+		while(x.more()) {//			System.out.println(x.nextToken());
+			x.skipPast("<");
+			if(x.more()) {
+				parse(x,jo, null, XMLParserConfiguration.ORIGINAL);
+				System.out.println("HERE :" + x);
+				
+				
 			}
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 		return jo;
 	}
 
