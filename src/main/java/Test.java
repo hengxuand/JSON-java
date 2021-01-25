@@ -8,11 +8,12 @@ import org.json.XML;
 
 public class Test {
 	public static void main(String args[]) throws IOException {
-//		JSONObject jo = new JSONObject("{ \"abc\" : \"def\" }");
-//		System.out.println(jo.toString());
-		JSONPointer jp = new JSONPointer("/letter/address");
+
+		JSONPointer jp = new JSONPointer("/letter/signature");
+
 		FileReader r = new FileReader("sample2.xml");
 		JSONObject newJo = XML.toJSONObject(r, jp);
 		System.out.println(newJo.toString());
+		r.close();
 	}
 }

@@ -555,18 +555,43 @@ public class XML {
 	// TODO: implement two new methods
 	// overload methods here
 	public static JSONObject toJSONObject(Reader reader, JSONPointer path) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		String[] pathArr = path.toURIFragment().split("/");
+		String joName = pathArr[pathArr.length-1];
 		JSONObject jo = new JSONObject();
-		XMLTokener x = new XMLTokener(reader);
-		while(x.more()) {//			System.out.println(x.nextToken());
-			x.skipPast("<");
-			if(x.more()) {
-				parse(x,jo, null, XMLParserConfiguration.ORIGINAL);
-				System.out.println("HERE :" + x);
-				
-				
+		Object obj = new Object();
+		JSONObject result = new JSONObject();
+
+		String line = "";
+		String lines = "";
+		while((line = bufferedReader.readLine()) != null){
+			lines += line;
+			StringReader sr = new StringReader(lines);
+			try{
+				jo = XML.toJSONObject(sr);
+				obj = jo.query(path);
+				if(obj != null){
+					break;
+				}
+				else{
+					continue;
+				}
+
+			} catch (Exception e){
+				continue;
 			}
 		}
-		return jo;
+		if(obj instanceof JSONArray){
+			result.put(joName, (JSONArray) obj);
+		}
+		else if(obj instanceof JSONObject){
+			result = (JSONObject) obj;
+		}
+		else if(obj instanceof String){
+			result.put(joName, obj);
+		}
+		return result;
+
 	}
 
 	static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) {
