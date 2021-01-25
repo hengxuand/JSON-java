@@ -552,39 +552,43 @@ public class XML {
 
 	// TODO: implement two new methods
 	// overload methods here
-	public static JSONObject toJSONObject(Reader reader, JSONPointer path) {
-
-		JSONObject jo = new JSONObject();
-		BufferedReader bufferreader = new BufferedReader(reader);
+	public static JSONObject toJSONObject(Reader reader, JSONPointer path) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(reader);
 		String[] pathArr = path.toURIFragment().split("/");
-		boolean found = false;
-		int i = 1;
+		String joName = pathArr[pathArr.length-1];
+		JSONObject jo = new JSONObject();
+		Object obj = new Object();
+		JSONObject result = new JSONObject();
 
-		String startTag = pathArr[i];
 		String line = "";
-		try {
-			while ((line = bufferreader.readLine()) != null && !found && i < pathArr.length) {
-
-				if (line.contains("<" + startTag + ">")) {
-					i++;
-					startTag = pathArr[i];
-					String jsonStart = line.substring(line.indexOf("<" + startTag + ">"));
-					String endTag = "</" + pathArr[i] + ">";
-					System.out.println(jsonStart + endTag);
-					for (int j = i + 1; j < pathArr.length; j++) {
-
-					}
+		String lines = "";
+		while((line = bufferedReader.readLine()) != null){
+			lines += line;
+			StringReader sr = new StringReader(lines);
+			try{
+				jo = XML.toJSONObject(sr);
+				obj = jo.query(path);
+				if(obj != null){
+					break;
+				}
+				else{
+					continue;
 				}
 
-				line = "";
+			} catch (Exception e){
+				continue;
 			}
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
-		return jo;
+		if(obj instanceof JSONArray){
+			result.put(joName, (JSONArray) obj);
+		}
+		else if(obj instanceof JSONObject){
+			result = (JSONObject) obj;
+		}
+		else if(obj instanceof String){
+			result.put(joName, obj);
+		}
+		return result;
 	}
 
 	static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) {
