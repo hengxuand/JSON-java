@@ -550,13 +550,12 @@ public class XML {
 		return val.indexOf('.') > -1 || val.indexOf('e') > -1 || val.indexOf('E') > -1 || "-0".equals(val);
 	}
 
-	// TODO: implement two new methods
 	// overload methods here
 	public static JSONObject toJSONObject(Reader reader, JSONPointer path) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(reader);
 		String[] pathArr = path.toURIFragment().split("/");
 		String joName = pathArr[pathArr.length-1];
-		JSONObject jo = new JSONObject();
+		JSONObject jo;
 		Object obj = new Object();
 		JSONObject result = new JSONObject();
 
@@ -614,6 +613,64 @@ public class XML {
 			System.out.println("In Array!");
 		}
 		return jo;
+	}
+
+
+	// Todo Milestone3\
+	// define the interface
+	interface func{
+		String excute(String s);
+	}
+
+	static JSONObject toJSONObject(Reader reader, func keyTransformer) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		String resultString = "";
+		JSONObject jo;
+		String line = "";
+		String lines = "";
+
+		while((line = bufferedReader.readLine()) != null) {
+			lines += line;
+			try{
+				jo = XML.toJSONObject(lines);
+				if(jo != null){
+					resultString += addPrefix(jo, keyTransformer).toString();
+				}
+			} catch (Exception e){
+				continue;
+			}
+		}
+
+		return toJSONObject(resultString);
+	}
+
+	static JSONObject addPrefix(JSONObject jo, func keyTransformer) {
+		JSONObject result = new JSONObject();
+
+		jo.keySet().forEach(key -> {
+			String newKey = keyTransformer.excute(key);
+			Object obj = jo.get(key);
+
+			if (obj instanceof JSONObject) {
+				result.put(newKey, addPrefix((JSONObject) obj, keyTransformer));
+			}
+			else if (obj instanceof JSONArray){
+				for (Object innerObj : (JSONArray) obj) {
+					if(innerObj instanceof JSONObject) {
+						result.put(newKey, addPrefix((JSONObject) innerObj, keyTransformer));
+					}
+					else {
+						result.accumulate(newKey, innerObj);
+					}
+				}
+			}
+			else if (obj instanceof String) {
+				result.put(newKey, obj);
+			} else {
+				result.put(newKey, obj);
+			}
+		});
+		return result;
 	}
 
 	/**
