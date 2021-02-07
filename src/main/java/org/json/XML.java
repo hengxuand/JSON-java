@@ -239,7 +239,7 @@ public class XML {
 	}
 
 	/**
-	 * Scan the content following the named tag, attaching it to the context.
+	 * Scan the content following the nam/Users/ninavuong/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Master/262/JSON-java/src/main/java/org/json/XML.javaed tag, attaching it to the context.
 	 *
 	 * @param x       The XMLTokener containing the source string.
 	 * @param context The JSONObject that will include the new material.
