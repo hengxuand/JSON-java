@@ -638,7 +638,7 @@ public class XML {
 			lines += line;
 			try{
 				jo = XML.toJSONObject(lines);
-				if(jo != null){
+				if(!jo.isEmpty()){
 					resultString += addPrefix(jo, keyTransformer).toString();
 					lines = "";
 				}
@@ -646,8 +646,7 @@ public class XML {
 				continue;
 			}
 		}
-
-		return toJSONObject(resultString);
+		return new JSONObject(resultString);
 	}
 
 	static JSONObject addPrefix(JSONObject jo, func keyTransformer) {
