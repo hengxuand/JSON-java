@@ -618,11 +618,11 @@ public class XML {
 
 	// Todo Milestone3\
 	// define the interface
-	interface func{
+	public interface func{
 		String excute(String s);
 	}
 
-	static JSONObject toJSONObject(Reader reader, func keyTransformer) throws IOException {
+	public static JSONObject toJSONObject(Reader reader, func keyTransformer) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(reader);
 		String resultString = "";
 		JSONObject jo;
@@ -633,15 +633,15 @@ public class XML {
 			lines += line;
 			try{
 				jo = XML.toJSONObject(lines);
-				if(jo != null){
+				if(!jo.isEmpty()){
 					resultString += addPrefix(jo, keyTransformer).toString();
+					lines = "";
 				}
 			} catch (Exception e){
 				continue;
 			}
 		}
-
-		return toJSONObject(resultString);
+		return new JSONObject(resultString);
 	}
 
 	static JSONObject addPrefix(JSONObject jo, func keyTransformer) {
