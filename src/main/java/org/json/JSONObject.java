@@ -36,16 +36,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * A JSONObject is an unordered collection of name/value pairs. Its external
@@ -1627,7 +1621,7 @@ public class JSONObject {
      * implementations and interfaces has the annotation. Returns the depth of the
      * annotation in the hierarchy.
      *
-     * @param <A>
+     * @param <>
      *            type of the annotation
      *
      * @param m
@@ -2644,5 +2638,24 @@ public class JSONObject {
         return new JSONException(
                 "JSONObject[" + quote(key) + "] is not a " + valueType + " (" + value + ")."
                 , cause);
+    }
+
+
+    // TODO milestone 4
+    /**
+     * // in client space
+     * JSONObject obj = XML.toJSONObject("<Books><book><title>AAA</title><author>ASmith</author></book><book><title>BBB</title><author>BSmith</author></book></Books>");
+     * obj.toStream().forEach(node -> do some transformation, possibly based on the path of the node);
+     * List<String> titles = obj.toStream().map(node -> extract value for key "title").collect(Collectors.toList());
+     * obj.toStream().filter(node -> node with certain properties).forEach(node -> do some transformation);
+     *
+     * These stream operations apply to JSONObject, and are started by transforming those objects into streams with the new toStream() method,
+     * that you should write. Given that XML and JSON are hierarchical structures, you need to think about the type of stream you want to support.
+     * E.g. top-level elements only, every element independent of nesting, etc. There can be many options.
+     * The critical thing here is that, unless the client code explicitly collects the data into an object, the data should simply flow in small parts to the next operation.
+     */
+
+    public Stream<Map.Entry<String, Object>> toStream(){
+        return this.entrySet().stream();
     }
 }
