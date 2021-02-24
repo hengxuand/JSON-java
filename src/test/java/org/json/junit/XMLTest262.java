@@ -291,17 +291,51 @@ public class XMLTest262 {
                 + "  <logo alt=\"Logo of Smith and Company Ltd.\" address=\"http://www.smith-company-ltd.com/logo.jpg\"/>\n"
                 + "    <signature>Nina Vuong</signature>\n" + "</letter>\n" + "<letter1>ABC\n" + "</letter1>";
 
+        String expectXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!-- saved from url=(0014)about:internet -->\n" + "\n" + "\n" + "<letter>\n" + "\n" + "\n"
+                + "  <title maxlength=\"10\"> Quote Letter </title>\n" + "\n" + "\n"
+                + "  <salutation limit=\"40\">Dear Daniel,</salutation>\n" + "\n" + "\n"
+                + "  <text>Thank you for sending us the information on <emphasis>SDL Trados Studio 2009</emphasis>.\n"
+                + "\n" + "\n"
+                + "    We like your products and think they certainly represent the most powerful translation\n"
+                + "solution on the market.\n" + "\n" + "\n"
+                + "    We especially like the <component translate=\"yes\">XML Parser rules</component>\n"
+                + "options in the <component translate=\"no\">XML</component> filter.\n" + "\n" + "\n"
+                + "    It has helped us to set up support for our XML files in a flash.\n" + "\n" + "\n"
+                + "    We have already downloaded the latest version from your Customer Center.</text>\n" + "\n" + "\n"
+                + "   <title maxlength=\"40\"> Quote Details </title>\n" + "\n" + "\n"
+                + "    <text> We would like to order 50 licenses.\n" + "\n" + "\n"
+                + "    Please send us a quote. Keep up the good work!</text>\n" + "\n" + "\n" + "  \n" + "\n" + "\n"
+                + "  <greetings minlength=\"10\">Yours sincerely,</greetings>\n" + "\n" + "\n"
+                + "  <signature> Paul Smith</signature>\n" + "\n"
+                + "  <address translate=\"yes\">Smith &amp; Company Ltd.</address>\n" + "\n" + "\n"
+                + "  <address translate=\"no\">Smithtown</address>\n" + "\n" + "\n"
+                + "  <weblink>http://www.smith-company-ltd.com</weblink>\n" + "\n" + "\n"
+                + "  <262_logo alt=\"Logo of Smith and Company Ltd.\" address=\"http://www.smith-company-ltd.com/logo.jpg\"/>\n"
+                + "    <signature>Nina Vuong</signature>\n" + "</letter>\n" + "<letter1>ABC\n" + "</letter1>";
+
         JSONObject obj = XML.toJSONObject(originalXml);
-        JSONPointer jp = new JSONPointer("/title");
+        JSONObject expectJS = XML.toJSONObject(expectXML).getJSONObject("letter");
 
-        List list = obj.toStream().filter(node -> (node.getValue() instanceof JSONObject))
-                .map(node -> ((JSONObject) node.getValue()).getJSONArray("title").toList())
-                .collect(Collectors.toList());
+        JSONPointer jp = new JSONPointer("/logo");
 
-        List resultList = (List) list.get(0);
-        List expectList = ((JSONArray)obj.query("/letter/title")).toList();
+        JSONObject resultJS = new JSONObject();
+        obj.toStream().filter(node -> (node.getValue() instanceof JSONObject))
+                .forEach(node -> {
+                    if (((JSONObject) node.getValue()).query(jp) != null) {
+                        ((JSONObject) ((JSONObject) node.getValue())).toStream().forEach(childnode -> {
+                            if (childnode.getKey().equals("logo")) {
+                                resultJS.put("262_" + childnode.getKey(), childnode.getValue());
+                            } else {
+                                resultJS.put(childnode.getKey(), childnode.getValue());
+                            }
+                        });
+                    } else {
+                        resultJS.put(node.getKey(), node.getValue());
+                    }
+                });
 
-        Assert.assertEquals(resultList, expectList);
+        Util.compareActualVsExpectedJsonObjects(resultJS, expectJS);
     }
 
 }
