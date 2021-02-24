@@ -9,7 +9,8 @@ After use System.currentTimeMillis(); to calculate the performance time.
 That just took 9ms to run for Milestone3. But took 22ms to run for Milestone1
 
 
-# Milestone 4: JSON-java/src/test/java/org.json.junit/XMLTest262.java
+# Milestone 4: 
+run the file test in JSON-java/src/test/java/org.json.junit/XMLTest262.java
 
 @Test
 milestone4Test1 : test new function that using obj.toStream().forEach(node -> do some transformation, possibly based on the path of the node);
