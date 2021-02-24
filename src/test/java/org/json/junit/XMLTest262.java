@@ -210,19 +210,25 @@ public class XMLTest262 {
         JSONPointer jp = new JSONPointer("/logo");
 
         JSONObject resultJS = new JSONObject();
-        obj.toStream().filter(node -> (node.getValue() instanceof JSONObject))
+        obj.toStream()
+//                .filter(node -> (node.getValue() instanceof JSONObject))
                 .forEach(node -> {
-                    if (((JSONObject) node.getValue()).query(jp) != null) {
-                        ((JSONObject) ((JSONObject) node.getValue())).toStream().forEach(childnode -> {
-                            if (childnode.getKey().equals("logo")) {
-                                resultJS.put("262_" + childnode.getKey(), childnode.getValue());
-                            } else {
-                                resultJS.put(childnode.getKey(), childnode.getValue());
-                            }
-                        });
-                    } else {
-                        resultJS.put(node.getKey(), node.getValue());
+                    try{
+                        if (((JSONObject) node.getValue()).query(jp) != null) {
+                            ((JSONObject) ((JSONObject) node.getValue())).toStream().forEach(childnode -> {
+                                if (childnode.getKey().equals("logo")) {
+                                    resultJS.put("262_" + childnode.getKey(), childnode.getValue());
+                                } else {
+                                    resultJS.put(childnode.getKey(), childnode.getValue());
+                                }
+                            });
+                        } else {
+                            resultJS.put(node.getKey(), node.getValue());
+                        }
+                    }catch (Exception e){
+                        System.out.println("it is a String");
                     }
+
                 });
 
         Util.compareActualVsExpectedJsonObjects(resultJS, expectJS);
