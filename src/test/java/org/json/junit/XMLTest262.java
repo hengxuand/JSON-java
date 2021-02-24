@@ -220,7 +220,6 @@ public class XMLTest262 {
                                 resultJS.put(childnode.getKey(), childnode.getValue());
                             }
                         });
-//                        resultJS.put("262" + node.getKey(), node.getValue());
                     } else {
                         resultJS.put(node.getKey(), node.getValue());
                     }
@@ -299,10 +298,10 @@ public class XMLTest262 {
                 .map(node -> ((JSONObject) node.getValue()).getJSONArray("title").toList())
                 .collect(Collectors.toList());
 
-        List reultList = (List) list.get(0);
+        List resultList = (List) list.get(0);
         List expectList = ((JSONArray)obj.query("/letter/title")).toList();
 
-        Assert.assertEquals(reultList, expectList);
+        Assert.assertEquals(resultList, expectList);
     }
 
 }
