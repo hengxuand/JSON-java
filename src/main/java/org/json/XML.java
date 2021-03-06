@@ -683,8 +683,11 @@ public class XML {
 	// TODO: Milestone 5
 	private static ExecutorService executor = Executors.newSingleThreadExecutor();
 	public interface function{
+		JSONPointer jp = null;
 		void failFunction(String s);
 		JSONObject successFunction(JSONObject jsonObject);
+		JSONObject successFunction(JSONObject jsonObject, JSONPointer jp);
+		JSONPointer getJp();
 	}
 	private static Future<JSONObject> threadToJSONObject(Reader reader)
 	{
@@ -696,7 +699,9 @@ public class XML {
 
 	public static Object toJSONObject(Reader reader, function successFunc, function failFunc) throws InterruptedException, ExecutionException {
 		Future<JSONObject> future = XML.threadToJSONObject(reader);
-		int timeOut = 100;
+
+//		int timeOut = 3;
+		int timeOut = 7;
 		int i = 0;
 		while (!future.isDone())
 		{
@@ -712,7 +717,15 @@ public class XML {
 				return null;
 			}
 		}
-		return successFunc.successFunction(future.get());
+		if(successFunc.getJp() == null){
+			return successFunc.successFunction(future.get());
+		}
+		else
+		{
+			JSONObject jo = successFunc.successFunction(future.get(), successFunc.getJp());
+			return jo;
+		}
+
 	}
 
 	/**

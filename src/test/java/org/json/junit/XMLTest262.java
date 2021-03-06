@@ -348,7 +348,10 @@ public class XMLTest262 {
     @Test
     public void milestone5Test1() throws ExecutionException, InterruptedException {
         class functions implements XML.function{
-
+            JSONPointer jp;
+            functions(JSONPointer jsonPointer){
+                this.jp = jsonPointer;
+            }
             @Override
             public void failFunction(String s) {
                 System.out.println(s);;
@@ -357,6 +360,16 @@ public class XMLTest262 {
             @Override
             public JSONObject successFunction(JSONObject jsonObject) {
                 return jsonObject;
+            }
+
+            @Override
+            public JSONObject successFunction(JSONObject jsonObject, JSONPointer jp) {
+                return (JSONObject) jsonObject.query(jp);
+            }
+
+            @Override
+            public JSONPointer getJp() {
+                return jp;
             }
         }
         String originalXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -382,7 +395,7 @@ public class XMLTest262 {
                 + "  <logo alt=\"Logo of Smith and Company Ltd.\" address=\"http://www.smith-company-ltd.com/logo.jpg\"/>\n"
                 + "    <signature>Nina Vuong</signature>\n" + "</letter>\n" + "<letter1>\n" + "</letter1>";
 
-        String expectedJsonString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        String expectedJsonXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<!-- saved from url=(0014)about:internet -->\n" + "\n" + "\n" + "<letter>\n" + "\n" + "\n"
                 + "  <title maxlength=\"10\"> Quote Letter </title>\n" + "\n" + "\n"
                 + "  <salutation limit=\"40\">Dear Daniel,</salutation>\n" + "\n" + "\n"
@@ -406,10 +419,77 @@ public class XMLTest262 {
                 + "    <signature>Nina Vuong</signature>\n" + "</letter>\n" + "<letter1>\n" + "</letter1>";
 
         StringReader stringReader = new StringReader(originalXml);
-        JSONObject actualJson = (JSONObject) XML.toJSONObject(stringReader, new functions(), new functions());
 
-        JSONObject expectedJson = XML.toJSONObject(expectedJsonString);
-
+        // 1st test case
+        JSONObject actualJson = (JSONObject) XML.toJSONObject(stringReader, new functions(null), new functions(null));
+        JSONObject expectedJson = XML.toJSONObject(expectedJsonXML);
+        System.out.println("verifying result");
         Util.compareActualVsExpectedJsonObjects(actualJson, expectedJson);
+        System.out.println("done 1st test case");
     }
+
+    @Test
+    public void milestone5Test2() throws ExecutionException, InterruptedException {
+        class functions implements XML.function{
+            JSONPointer jp;
+            functions(JSONPointer jsonPointer){
+                this.jp = jsonPointer;
+            }
+            @Override
+            public void failFunction(String s) {
+                System.out.println(s);;
+            }
+
+            @Override
+            public JSONObject successFunction(JSONObject jsonObject) {
+                return jsonObject;
+            }
+
+            @Override
+            public JSONObject successFunction(JSONObject jsonObject, JSONPointer jp) {
+                JSONObject jsonObject1 = (JSONObject) jsonObject.query(jp);
+                return jsonObject1;
+            }
+
+            @Override
+            public JSONPointer getJp() {
+                return jp;
+            }
+        }
+        String originalXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!-- saved from url=(0014)about:internet -->\n" + "\n" + "\n" + "<letter>\n" + "\n" + "\n"
+                + "  <title maxlength=\"10\"> Quote Letter </title>\n" + "\n" + "\n"
+                + "  <salutation limit=\"40\">Dear Daniel,</salutation>\n" + "\n" + "\n"
+                + "  <text>Thank you for sending us the information on <emphasis>SDL Trados Studio 2009</emphasis>.\n"
+                + "\n" + "\n"
+                + "    We like your products and think they certainly represent the most powerful translation\n"
+                + "solution on the market.\n" + "\n" + "\n"
+                + "    We especially like the <component translate=\"yes\">XML Parser rules</component>\n"
+                + "options in the <component translate=\"no\">XML</component> filter.\n" + "\n" + "\n"
+                + "    It has helped us to set up support for our XML files in a flash.\n" + "\n" + "\n"
+                + "    We have already downloaded the latest version from your Customer Center.</text>\n" + "\n" + "\n"
+                + "   <title maxlength=\"40\"> Quote Details </title>\n" + "\n" + "\n"
+                + "    <text> We would like to order 50 licenses.\n" + "\n" + "\n"
+                + "    Please send us a quote. Keep up the good work!</text>\n" + "\n" + "\n" + "  \n" + "\n" + "\n"
+                + "  <greetings minlength=\"10\">Yours sincerely,</greetings>\n" + "\n" + "\n"
+                + "  <signature> Paul Smith</signature>\n" + "\n"
+                + "  <address translate=\"yes\">Smith &amp; Company Ltd.</address>\n" + "\n" + "\n"
+                + "  <address translate=\"no\">Smithtown</address>\n" + "\n" + "\n"
+                + "  <weblink>http://www.smith-company-ltd.com</weblink>\n" + "\n" + "\n"
+                + "  <logo alt=\"Logo of Smith and Company Ltd.\" address=\"http://www.smith-company-ltd.com/logo.jpg\"/>\n"
+                + "</letter>\n" + "<letter1>\n" + "</letter1>";
+
+
+        StringReader stringReader = new StringReader(originalXml);
+
+        String expectedJsonString = "{\"address\":\"http://www.smith-company-ltd.com/logo.jpg\",\"alt\":\"Logo of Smith and Company Ltd.\"}";
+        JSONObject expectedJson1 = new JSONObject(expectedJsonString);
+
+        // 2nd test case
+        JSONPointer jp = new JSONPointer("/letter/logo");
+
+        JSONObject actualJson1 = (JSONObject) XML.toJSONObject(stringReader, new functions(jp), new functions(jp));
+        Util.compareActualVsExpectedJsonObjects(actualJson1, expectedJson1);
+    }
+
 }
