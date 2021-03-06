@@ -32,6 +32,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.concurrent.*;
 
 /**
  * This provides static methods to convert an XML text into a JSONObject, and to
@@ -676,6 +677,41 @@ public class XML {
 			}
 		});
 		return result;
+	}
+
+
+	// TODO: Milestone 5
+	private static ExecutorService executor = Executors.newSingleThreadExecutor();
+	public interface function{
+		void failFunction(String s);
+		JSONObject successFunction(JSONObject jsonObject);
+	}
+	private static Future<JSONObject> threadToJSONObject(Reader reader)
+	{
+		return executor.submit(()->{
+			Thread.sleep(3000);
+			return toJSONObject(reader);
+		});
+	}
+
+	public static Object toJSONObject(Reader reader, function successFunc, function failFunc) throws InterruptedException, ExecutionException {
+		Future<JSONObject> future = XML.threadToJSONObject(reader);
+		int timeOut = 100;
+		int i = 0;
+		while (!future.isDone())
+		{
+			if(i<timeOut)
+			{
+				System.out.println("running.......");
+				Thread.sleep(500);
+			}
+			else
+			{
+				failFunc.failFunction("something went wrong");
+				return null;
+			}
+		}
+		return successFunc.successFunction(future.get());
 	}
 
 	/**

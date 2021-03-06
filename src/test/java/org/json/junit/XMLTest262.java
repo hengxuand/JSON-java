@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.json.*;
@@ -344,4 +345,71 @@ public class XMLTest262 {
         Util.compareActualVsExpectedJsonObjects(resultJS, expectJS);
     }
 
+    @Test
+    public void milestone5Test1() throws ExecutionException, InterruptedException {
+        class functions implements XML.function{
+
+            @Override
+            public void failFunction(String s) {
+                System.out.println(s);;
+            }
+
+            @Override
+            public JSONObject successFunction(JSONObject jsonObject) {
+                return jsonObject;
+            }
+        }
+        String originalXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!-- saved from url=(0014)about:internet -->\n" + "\n" + "\n" + "<letter>\n" + "\n" + "\n"
+                + "  <title maxlength=\"10\"> Quote Letter </title>\n" + "\n" + "\n"
+                + "  <salutation limit=\"40\">Dear Daniel,</salutation>\n" + "\n" + "\n"
+                + "  <text>Thank you for sending us the information on <emphasis>SDL Trados Studio 2009</emphasis>.\n"
+                + "\n" + "\n"
+                + "    We like your products and think they certainly represent the most powerful translation\n"
+                + "solution on the market.\n" + "\n" + "\n"
+                + "    We especially like the <component translate=\"yes\">XML Parser rules</component>\n"
+                + "options in the <component translate=\"no\">XML</component> filter.\n" + "\n" + "\n"
+                + "    It has helped us to set up support for our XML files in a flash.\n" + "\n" + "\n"
+                + "    We have already downloaded the latest version from your Customer Center.</text>\n" + "\n" + "\n"
+                + "   <title maxlength=\"40\"> Quote Details </title>\n" + "\n" + "\n"
+                + "    <text> We would like to order 50 licenses.\n" + "\n" + "\n"
+                + "    Please send us a quote. Keep up the good work!</text>\n" + "\n" + "\n" + "  \n" + "\n" + "\n"
+                + "  <greetings minlength=\"10\">Yours sincerely,</greetings>\n" + "\n" + "\n"
+                + "  <signature> Paul Smith</signature>\n" + "\n"
+                + "  <address translate=\"yes\">Smith &amp; Company Ltd.</address>\n" + "\n" + "\n"
+                + "  <address translate=\"no\">Smithtown</address>\n" + "\n" + "\n"
+                + "  <weblink>http://www.smith-company-ltd.com</weblink>\n" + "\n" + "\n"
+                + "  <logo alt=\"Logo of Smith and Company Ltd.\" address=\"http://www.smith-company-ltd.com/logo.jpg\"/>\n"
+                + "    <signature>Nina Vuong</signature>\n" + "</letter>\n" + "<letter1>\n" + "</letter1>";
+
+        String expectedJsonString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!-- saved from url=(0014)about:internet -->\n" + "\n" + "\n" + "<letter>\n" + "\n" + "\n"
+                + "  <title maxlength=\"10\"> Quote Letter </title>\n" + "\n" + "\n"
+                + "  <salutation limit=\"40\">Dear Daniel,</salutation>\n" + "\n" + "\n"
+                + "  <text>Thank you for sending us the information on <emphasis>SDL Trados Studio 2009</emphasis>.\n"
+                + "\n" + "\n"
+                + "    We like your products and think they certainly represent the most powerful translation\n"
+                + "solution on the market.\n" + "\n" + "\n"
+                + "    We especially like the <component translate=\"yes\">XML Parser rules</component>\n"
+                + "options in the <component translate=\"no\">XML</component> filter.\n" + "\n" + "\n"
+                + "    It has helped us to set up support for our XML files in a flash.\n" + "\n" + "\n"
+                + "    We have already downloaded the latest version from your Customer Center.</text>\n" + "\n" + "\n"
+                + "   <title maxlength=\"40\"> Quote Details </title>\n" + "\n" + "\n"
+                + "    <text> We would like to order 50 licenses.\n" + "\n" + "\n"
+                + "    Please send us a quote. Keep up the good work!</text>\n" + "\n" + "\n" + "  \n" + "\n" + "\n"
+                + "  <greetings minlength=\"10\">Yours sincerely,</greetings>\n" + "\n" + "\n"
+                + "  <signature> Paul Smith</signature>\n" + "\n"
+                + "  <address translate=\"yes\">Smith &amp; Company Ltd.</address>\n" + "\n" + "\n"
+                + "  <address translate=\"no\">Smithtown</address>\n" + "\n" + "\n"
+                + "  <weblink>http://www.smith-company-ltd.com</weblink>\n" + "\n" + "\n"
+                + "  <logo alt=\"Logo of Smith and Company Ltd.\" address=\"http://www.smith-company-ltd.com/logo.jpg\"/>\n"
+                + "    <signature>Nina Vuong</signature>\n" + "</letter>\n" + "<letter1>\n" + "</letter1>";
+
+        StringReader stringReader = new StringReader(originalXml);
+        JSONObject actualJson = (JSONObject) XML.toJSONObject(stringReader, new functions(), new functions());
+
+        JSONObject expectedJson = XML.toJSONObject(expectedJsonString);
+
+        Util.compareActualVsExpectedJsonObjects(actualJson, expectedJson);
+    }
 }
